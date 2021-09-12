@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Collections.Generic;
 
 class Trade
 {
-    int Price;
+    double Price;
     int DateTime;
 
-    public Trade(int price)
+    public Trade(double price)
     {
         Price = price;
     }
 
-    public int price
-    {
-        get {  return (int)Price; }
-    }
+    public double price { get; set; }
 
     public override string ToString()
     {
-        return "Price:" + Price.ToString();
+        return $"Price: {Price}";
     }
 }
 
 class Processing
 {
     static Queue<Trade> Prices = new Queue<Trade>();
+    static object locker = new object();
 
     static void Main()
     {
@@ -38,7 +37,14 @@ class Processing
         {
             if(Prices.Count > 0)
             {
-                Console.WriteLine(Prices.Dequeue());
+                lock (locker)
+                {
+                    Console.WriteLine(Prices.Dequeue());
+                }
+            }
+            else
+            {
+                Thread.Sleep(1);
             }
         }
     }
@@ -53,7 +59,12 @@ class Processing
             rnd = new Random(i);
             Trade t = new Trade(rnd.Next(1, 100));
 
-            Prices.Enqueue(t);
+            lock (locker)
+            {
+                Prices.Enqueue(t);
+            }
+
+            Thread.Sleep(1000);
         }
     }
 }
