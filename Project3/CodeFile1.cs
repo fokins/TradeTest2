@@ -6,18 +6,19 @@ using System.Collections.Generic;
 class Trade
 {
     double Price;
-    int DateTime;
+    DateTime DateTime;
 
     public Trade(double price)
     {
         Price = price;
+        DateTime = DateTime.Now;
     }
 
     public double price { get; set; }
 
     public override string ToString()
     {
-        return $"Price: {Price}";
+        return $"Price: {Price} DateTime: {DateTime}";
     }
 }
 
