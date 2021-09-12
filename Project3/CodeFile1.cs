@@ -1,32 +1,38 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 class Trade
 {
     int Price;
-    Random rnd;
+    int DateTime;
 
-    public void RandomPrice(int rand)
+    public Trade(int price)
     {
-        rnd = new Random(rand);
-        Price = rnd.Next(0, 100);
+        Price = price;
     }
 
-    public int GetPrice()
+    public int price
     {
-        return Price;
+        get {  return (int)Price; }
+    }
+
+    public override string ToString()
+    {
+        return "Price:" + Price.ToString();
     }
 }
 
 class Processing
 {
-    static Queue<int> Prices = new Queue<int>();
+    static Queue<Trade> Prices = new Queue<Trade>();
 
     static void Main()
     {
-        Thread Generator = new Thread(GenerateTrade);
-        Generator.Start();
+        Task generator = new Task(() => GenerateTrade());
+
+        generator.Start();
+
 
         while (true)
         {
@@ -39,12 +45,15 @@ class Processing
 
     static void GenerateTrade()
     {
+
+        Random rnd;
+
         for (int i = 0; i < 100; i++)
         {
-            Trade t = new Trade();
-            t.RandomPrice(i);
-            Prices.Enqueue(t.GetPrice());
-            Thread.Sleep(1);
+            rnd = new Random(i);
+            Trade t = new Trade(rnd.Next(1, 100));
+
+            Prices.Enqueue(t);
         }
     }
 }
